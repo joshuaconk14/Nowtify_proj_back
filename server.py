@@ -7,7 +7,7 @@ CORS(app)
 
 @app.route('/api')
 def home():
-    return jsonify(message="Hello from Flask backend!")
+    return jsonify(message="Hello from Flask backenddddd!")
 
 # if __name__ == "__main__":
 #     port = int(os.environ.get("PORT", 5000))
