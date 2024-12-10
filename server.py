@@ -5,9 +5,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/api')
+@app.route('/api', methods=['GET'])
 def home():
-    return jsonify(message="Hello from Flask backenddddd!")
+    return jsonify(message="Hello from Flask backendahh!")
 
 # if __name__ == "__main__":
 #     port = int(os.environ.get("PORT", 5000))
