@@ -1,2 +1,32 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore environment files
 .env
+
+# Ignore log files
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# venv
 venv/
+
+# flask session
+flask_session/
+
+# instance
+instance/
+
+
+# dump.rdb
+dump.rdb
+
+# ssl
+ssl/
