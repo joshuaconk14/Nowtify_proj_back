@@ -251,7 +251,7 @@ def callback():
 def get_playlists():
 
     if 'access_token' not in session:
-        return redirect({SPOTIFY_REDIRECT_URI}) # change to redirect to /dashboard after debugging done
+        return redirect("https://new-frontend-e40841b2a75a.herokuapp.com/dashboard") # change to redirect to /dashboard after debugging done
     
     # make sure access token has not expired
     if datetime.now().timestamp() > session['expires_at']: # if access token datetime > 3600 (expired)
