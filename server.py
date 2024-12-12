@@ -16,6 +16,7 @@ load_dotenv()
 
 
 
+
 app = Flask(__name__) # create app instance / representation, + serving static files from frontend/build
 app.config.from_object(ApplicationConfig) # initialize app config from config.py, this comes after importing config.py
 
