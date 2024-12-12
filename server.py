@@ -280,7 +280,7 @@ def get_playlists():
 
     # return playlists to user as JSON response
     # after that, redirecting user to dashboard w/ their playlists
-    return jsonify(playlists), 200
+    return jsonify(playlists), 200 
 
 
 
