@@ -251,7 +251,7 @@ def callback():
 def get_playlists():
 
     if 'access_token' not in session:
-        return redirect(f"http://localhost:5004/dashboard") # change to redirect to /dashboard after debugging done
+        return redirect({SPOTIFY_REDIRECT_URI}) # change to redirect to /dashboard after debugging done
     
     # make sure access token has not expired
     if datetime.now().timestamp() > session['expires_at']: # if access token datetime > 3600 (expired)
@@ -337,6 +337,11 @@ def unlink_playlist():
 
 
 
+#for production
+# if __name__ == "__main__":
+#     app.run(port = 5004, debug = True)
 
+
+#for development
 if __name__ == "__main__":
-    app.run(port = 5004, debug = True)
+    app.run(debug = True)
