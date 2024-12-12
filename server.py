@@ -15,10 +15,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-app = Flask(__name__)
-CORS(app)
-
-
 
 app = Flask(__name__) # create app instance / representation, + serving static files from frontend/build
 app.config.from_object(ApplicationConfig) # initialize app config from config.py, this comes after importing config.py
@@ -35,29 +31,16 @@ db.init_app(app) # initializes database connection w/ application, this comes af
 
 
 
-# creates the database, only run once
-with app.app_context():
-    db.create_all()
+# # creates the database, only run once
+# with app.app_context():
+#     db.create_all()
 
 
 
-#testing
-@app.route('/', methods=['GET'])
-def home():
-    return jsonify({'message': 'homepage'}), 200
-
-
-
-
-
-
-
-# # Add after_request decorator to set CORS headers
-# @app.after_request
-# def after_request(response):
-#     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-#     response.headers.add('Access-Control-Allow-Credentials', 'true')
-#     return response
+# #testing
+# @app.route('/', methods=['GET'])
+# def home():
+#     return jsonify({'message': 'homepage'}), 200
 
 
 
@@ -108,7 +91,7 @@ def register():
         db.session.add(new_user) # add new user to db
         db.session.commit() # commit it to the db
 
-        # session['user_id'] = new_user.id
+        session['user_id'] = new_user.id
         # FOR API TESTING, what we receive after entering usrnm/ pswrd
         return jsonify ({'id': new_user.id, 'username': new_user.username}), 201 # 201 HTTP reponse status = success + creation of new resource
     
@@ -268,7 +251,7 @@ def callback():
 def get_playlists():
 
     if 'access_token' not in session:
-        return redirect(f"{frontend_url}/dashboard") # change to redirect to /dashboard after debugging done
+        return redirect(f"http://localhost:5004/dashboard") # change to redirect to /dashboard after debugging done
     
     # make sure access token has not expired
     if datetime.now().timestamp() > session['expires_at']: # if access token datetime > 3600 (expired)
@@ -356,4 +339,4 @@ def unlink_playlist():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port = 5004, debug = True)

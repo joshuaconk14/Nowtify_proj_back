@@ -3,18 +3,22 @@
 from dotenv import load_dotenv
 import os
 import redis
-from urllib.parse import quote # for my password since theres an @ in it
+from urllib.parse import quote # for my password, to pass through its @ and ! symbols
 
 load_dotenv()
 
-password = quote("SQL_PASSWORD")
+password = quote(os.environ.get("SQL_PASSWORD"))
+username = os.environ.get("SQL_USERNAME")
+address = os.environ.get("SQL_ADDRESS")
+db_name = os.environ.get("SQL_DB_NAME")
+
 
 class ApplicationConfig:
     SECRET_KEY = os.environ.get("SECRET_KEY") # using secret key from .env
 
     # --database-- configurations
     SQLALCHEMY_TRACK_MODIFICATIONS = False # stops running useless messages
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", f'mysql+mysqlconnector://joshuaconk7:{password}@nowtify-db-test.cfaiue6qsrin.us-west-1.rds.amazonaws.com/nowtify-DB-test') # getting heroku database url from env + specifying which MySQL db to connect to
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", f'mysql+mysqlconnector://{username}:{password}@{address}/{db_name}')
 
     # --session-- configurations
     SESSION_TYPE = 'redis'
