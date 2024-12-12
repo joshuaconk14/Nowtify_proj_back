@@ -67,7 +67,11 @@ def get_current_user():
     if user_id:
     # if user id in session:
         user = User.query.filter_by(id = user_id).first()
-        return jsonify({'logged_in': True, 'id': user.id, 'username': user.username, 'session': session}), 200
+        return jsonify({
+            'logged_in': True,
+            'id': user.id,
+            'username': user.username,
+            'session': {key: session[key] for key in session.keys()}}), 200 #session: session works as a localproxy, but not in deployment: need to extract relevant session info
     else:
         return jsonify({'logged_in': False}), 401 # ***** this is the line that runs for the error *****
 
@@ -251,7 +255,7 @@ def callback():
 def get_playlists():
 
     if 'access_token' not in session:
-        return redirect("https://new-frontend-e40841b2a75a.herokuapp.com/dashboard") # change to redirect to /dashboard after debugging done
+        return redirect({SPOTIFY_REDIRECT_URI}) # change to redirect to /dashboard after debugging done
     
     # make sure access token has not expired
     if datetime.now().timestamp() > session['expires_at']: # if access token datetime > 3600 (expired)
