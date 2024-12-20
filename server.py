@@ -25,7 +25,7 @@ frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
 
 bcrypt = Bcrypt(app) # initializes Bcrypt for app
-CORS(app, supports_credentials= True, origins=["https://nowtify-52de1190e5f2.herokuapp.com"]) # CORS allows react and flask to communicate, support_cred allows user auth to take place
+CORS(app, supports_credentials= True, origins=[frontend_url]) # CORS allows react and flask to communicate, support_cred allows user auth to take place
 server_session = Session(app) # initializes Redis session for app, 'server_session' makes it a server-sided sesh instead of client-side (client-side is very insecure)
 db.init_app(app) # initializes database connection w/ application, this comes after importing models.py
 
@@ -342,11 +342,11 @@ def unlink_playlist():
 
 
 
-#for production
+# #for production
 # if __name__ == "__main__":
 #     app.run(port = 5004, debug = True)
 
 
 #for development
-if __name__ == "__main__":
-    app.run(debug = True)
+# if __name__ == "__main__":
+#     app.run(debug = True)
