@@ -342,11 +342,11 @@ def unlink_playlist():
 
 
 
-# #for production
-# if __name__ == "__main__":
-#     app.run(port = 5004, debug = True)
+#for production
+if __name__ == "__main__":
+    app.run(port = 5004, debug = True)
 
-
+ 
 #for development
 # if __name__ == "__main__":
 #     app.run(debug = True)
