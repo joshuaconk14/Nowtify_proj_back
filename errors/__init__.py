@@ -1,0 +1,2 @@
+# Errors package
+
