@@ -57,3 +57,4 @@ def register_error_handlers(app):
             'message': 'An unexpected error occurred'
         }), 500
 
+

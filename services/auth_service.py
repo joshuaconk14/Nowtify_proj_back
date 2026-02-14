@@ -70,3 +70,4 @@ class AuthService:
         """
         return User.query.filter_by(id=user_id).first()
 
+

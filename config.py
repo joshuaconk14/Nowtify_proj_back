@@ -2,12 +2,16 @@
 
 from dotenv import load_dotenv
 import os
-import redis
+try:
+    import redis
+except ImportError:
+    redis = None  # Redis is optional if using filesystem sessions
 
 load_dotenv()
 
 # Determine environment (development or production)
-ENV = os.environ.get("FLASK_ENV", "development")
+# Railway sets RAILWAY_ENVIRONMENT, Heroku uses FLASK_ENV
+ENV = os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("FLASK_ENV", "development")
 
 
 class ApplicationConfig:
@@ -34,20 +38,27 @@ class ApplicationConfig:
     SESSION_USE_SIGNER = True  # uses secret key signer to allow access into app
     PERMANENT_SESSION_LIFETIME = 3600  # session will last for 1 hour
     
-    # Use filesystem sessions for local dev, Redis for production
-    if ENV == "development":
-        SESSION_TYPE = 'filesystem'  # No Redis needed for local development
-        SESSION_FILE_DIR = './flask_session'  # Directory to store session files
-        SESSION_COOKIE_SECURE = False  # False for local HTTP development
-        SESSION_COOKIE_SAMESITE = 'Lax'  # Lax is fine for local development
-    else:
-        SESSION_TYPE = 'redis'  # Redis for production
-        redis_url = os.environ.get("REDISCLOUD_URL")
-        if not redis_url:
-            raise ValueError("REDISCLOUD_URL must be set in production environment")
-        SESSION_REDIS = redis.from_url(redis_url)  # redis URL, pointing to redis client
+    # Session storage: Use Redis if available, otherwise fall back to filesystem
+    # Railway uses REDIS_URL, Heroku uses REDISCLOUD_URL
+    redis_url = os.environ.get("REDIS_URL") or os.environ.get("REDISCLOUD_URL")
+    
+    if redis_url and redis:
+        # Use Redis if URL is provided (better for production, especially with multiple instances)
+        SESSION_TYPE = 'redis'
+        SESSION_REDIS = redis.from_url(redis_url)
         SESSION_COOKIE_SECURE = True  # True for production HTTPS
         SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-site cookies with HTTPS
+    else:
+        # Fall back to filesystem sessions (works fine for single-instance deployments)
+        SESSION_TYPE = 'filesystem'
+        SESSION_FILE_DIR = './flask_session'  # Directory to store session files
+        # Cookie settings based on environment
+        if ENV == "development":
+            SESSION_COOKIE_SECURE = False  # False for local HTTP development
+            SESSION_COOKIE_SAMESITE = 'Lax'  # Lax is fine for local development
+        else:
+            SESSION_COOKIE_SECURE = True  # True for production HTTPS
+            SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-site cookies with HTTPS
     
     # --Spotify API-- configurations
     SPOTIFY_CLIENT_ID = os.environ.get("CLIENT_ID")
