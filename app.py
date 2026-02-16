@@ -33,7 +33,33 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     bcrypt = Bcrypt(app)
-    CORS(app, supports_credentials=True, origins=[os.environ.get("FRONTEND_URL", "http://localhost:3000")])
+    
+    # Configure CORS with proper origin handling
+    # Support both production and development origins
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+    # Strip any trailing slashes and ensure proper format
+    frontend_url = frontend_url.rstrip('/')
+    
+    # Build allowed origins list - support both production and local development
+    allowed_origins = [
+        frontend_url,
+        "http://localhost:3000",  # Local development
+        "http://127.0.0.1:3000",   # Alternative localhost
+    ]
+    # Remove duplicates while preserving order
+    allowed_origins = list(dict.fromkeys(allowed_origins))
+    
+    # Configure CORS with all necessary options for preflight requests
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=allowed_origins,
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Content-Type"],
+        max_age=3600
+    )
+    
     server_session = Session(app)
     
     # Create database tables if they don't exist
@@ -58,4 +84,3 @@ app = create_app()
 if __name__ == "__main__":
     # For development
     app.run(port=5004, debug=True)
-
