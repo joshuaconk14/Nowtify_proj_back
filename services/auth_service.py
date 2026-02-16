@@ -31,8 +31,12 @@ class AuthService:
         if existing_user:
             raise ValueError("Username already exists")
         
-        # Hash password and create user
+        # Hash password - ensure it's stored as a string (decode bytes if needed)
         hashed_password = self.bcrypt.generate_password_hash(password)
+        # Convert bytes to string if needed (Flask-Bcrypt returns bytes)
+        if isinstance(hashed_password, bytes):
+            hashed_password = hashed_password.decode('utf-8')
+        
         new_user = User(username=username, password=hashed_password)
         
         db.session.add(new_user)
@@ -53,8 +57,22 @@ class AuthService:
         """
         user = User.query.filter_by(username=username).first()
         
-        if user and self.bcrypt.check_password_hash(user.password, password):
-            return user
+        if not user:
+            return None
+        
+        # Handle password hash - ensure it's a string
+        password_hash = user.password
+        if isinstance(password_hash, bytes):
+            password_hash = password_hash.decode('utf-8')
+        
+        # Check password with error handling for invalid hashes
+        try:
+            if self.bcrypt.check_password_hash(password_hash, password):
+                return user
+        except (ValueError, TypeError) as e:
+            # Invalid password hash format - log and return None
+            print(f"Password hash error for user {username}: {str(e)}")
+            return None
         
         return None
     
@@ -69,5 +87,4 @@ class AuthService:
             User: User object if found, None otherwise
         """
         return User.query.filter_by(id=user_id).first()
-
 
