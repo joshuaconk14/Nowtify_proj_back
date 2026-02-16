@@ -97,7 +97,12 @@ def init_auth_routes(app, bcrypt_instance):
         except ValidationError as e:
             return jsonify({'message': str(e)}), 400
         except Exception as e:
-            return jsonify({'message': 'An error occurred during login'}), 500
+            # Log the actual error for debugging
+            import traceback
+            error_msg = str(e)
+            print(f"Login error: {error_msg}")
+            print(traceback.format_exc())
+            return jsonify({'message': f'An error occurred during login: {error_msg}'}), 500
     
     @auth_bp.route('/logout', methods=['POST'])
     @login_required
