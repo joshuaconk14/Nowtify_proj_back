@@ -22,19 +22,29 @@ def init_auth_routes(app, bcrypt_instance):
     @auth_bp.route("/@me", methods=['GET'])
     @login_required
     def get_current_user():
-        """Get current logged-in user information"""
-        auth_service = AuthService(bcrypt_instance)
-        user_id = session.get('user_id')
-        user = auth_service.get_user_by_id(user_id)
-        
-        if not user:
-            return jsonify({'logged_in': False}), 401
-        
-        return jsonify({
-            'logged_in': True,
-            'id': user.id,
-            'username': user.username
-        }), 200
+        """Get current logged-in user information. Never 500s; returns 401 if session invalid or user missing."""
+        try:
+            auth_service = AuthService(bcrypt_instance)
+            user_id = session.get('user_id')
+            if not user_id:
+                return jsonify({'logged_in': False}), 401
+            user = auth_service.get_user_by_id(user_id)
+            if not user:
+                session.pop('user_id', None)
+                session.modified = True
+                return jsonify({'logged_in': False}), 401
+            return jsonify({
+                'logged_in': True,
+                'id': user.id,
+                'username': user.username
+            }), 200
+        except Exception as e:
+            import traceback
+            print(f"@me error: {e}")
+            traceback.print_exc()
+            session.pop('user_id', None)
+            session.modified = True
+            return jsonify({'logged_in': False, 'error': 'Session invalid'}), 401
     
     @auth_bp.route("/register", methods=['POST'])
     def register():
