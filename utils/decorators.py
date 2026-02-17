@@ -2,7 +2,7 @@
 Decorators for route protection and authentication
 """
 from functools import wraps
-from flask import session, jsonify, redirect
+from flask import session, jsonify, request
 from datetime import datetime
 
 
@@ -12,6 +12,11 @@ def login_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Debug logging
+        print(f"Login required check - Session keys: {list(session.keys())}")
+        print(f"Login required check - user_id in session: {'user_id' in session}")
+        print(f"Login required check - Request headers: {dict(request.headers)}")
+        
         if 'user_id' not in session:
             return jsonify({'error': 'Unauthorized', 'message': 'Please log in to access this resource'}), 401
         return f(*args, **kwargs)
@@ -41,5 +46,4 @@ def spotify_auth_required(f):
         
         return f(*args, **kwargs)
     return decorated_function
-
 

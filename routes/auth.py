@@ -50,8 +50,9 @@ def init_auth_routes(app, bcrypt_instance):
                 validated_data['password']
             )
             
-            # Set session
+            # Set session and mark as modified to ensure cookie is sent
             session['user_id'] = new_user.id
+            session.modified = True  # Explicitly mark session as modified
             
             return jsonify({
                 'id': new_user.id,
@@ -85,7 +86,10 @@ def init_auth_routes(app, bcrypt_instance):
             )
             
             if user:
+                # Set session and mark as modified to ensure cookie is sent
                 session['user_id'] = user.id
+                session.modified = True  # Explicitly mark session as modified
+                
                 return jsonify({
                     'logged_in': True,
                     'id': user.id,
@@ -112,6 +116,7 @@ def init_auth_routes(app, bcrypt_instance):
         session.pop('access_token', None)
         session.pop('refresh_token', None)
         session.pop('expires_at', None)
+        session.modified = True  # Mark session as modified
         return jsonify({'message': 'Logged out'}), 200
     
     app.register_blueprint(auth_bp)
